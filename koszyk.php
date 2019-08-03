@@ -1,5 +1,6 @@
 <?php
 include_once("db_connection.php");
+include_once("layout.php");
 session_start();
 
 if (!isset($_SESSION['koszyk'])) {
@@ -11,7 +12,7 @@ if (isset($_GET['id'])) {
 }
 
 if (empty($_SESSION['koszyk'])) {
-    echo "<p>Brak towarow w koszyku</p>";
+    echo "<div class='alert alert-warning' role='alert'>Brak towarow w koszyku</div>";
     echo "<a href='sklep.php'>Wroc do sklepu";
     return;
 }
@@ -36,19 +37,19 @@ foreach ($_SESSION['koszyk'] as $key => $value) {
 $query[strlen($query) - 1] = ")";
 $result = $conn->query($query) or die($conn->error);
 
-echo "<table>";
-echo "<tr><td>Nazwa</td><td>Kategoria</td><td>Ilosc</td><td>Cena</td><td>Zmien ilosc</td></tr>";
+echo "<table class='table'>";
+echo "<thead class='thead-light'><th scope='col'>Nazwa</th><th scope='col'>Kategoria</th><th scope='col'>Ilosc</th><th scope='col'>Cena</th><th scope='col'>Zmien ilosc</th></tr></thead>";
 while ($row = $result->fetch_assoc()) {
     $amount = $_SESSION['koszyk'][$row['identyfikator']];
     $price = $amount * $row['cena'];
     $total_cost += $price;
-    echo "<tr><td>" . $row['nazwa'] . "</td>";
+    echo "<tbody><tr><th scope='row'>" . $row['nazwa'] . "</th>";
     echo "<td>" . $row['kategoria'] . "</td>";
     echo "<td>" . $amount . "</td>";
     echo "<td>" . $price . "</td><td><form action='koszyk.php' method='post'>
                                <input type='text' name='amount[]' value=" . $amount . ">
                                <input type='hidden' name='id[]' value=" . $row['identyfikator'] . ">
-                               <button type='submit' name='zmien'>Zmien</button></td></tr>";
+                               <button type='submit' name='zmien'>Zmien</button></td></tr></tbody>";
 }
 echo "</table>";
 
